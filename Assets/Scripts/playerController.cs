@@ -37,7 +37,7 @@ public class playerController : MonoBehaviour
 
         if (gameManager.instance.playerTurn && !gameManager.instance.playerGBed)
         {
-            //Debug.Log("Time left for player: " + targetTime);
+            Debug.Log("PLAY TURN HAS BEEN ENABLED!!");
 
             targetTime -= Time.deltaTime;
             timerImage.fillAmount = targetTime/ 10.0f;

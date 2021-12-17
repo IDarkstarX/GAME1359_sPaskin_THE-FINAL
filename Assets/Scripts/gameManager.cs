@@ -109,7 +109,7 @@ public class gameManager : MonoBehaviour
 
     void Update()
     {
-        Debug.Log("Enemy attack chosen: "+Enemy.enemyChoice);
+        //Debug.Log("Is player turn: "+ playerTurn);
         if (playerHealth <= 0 || enemyHealth <= 0)
         {
             return;
@@ -123,6 +123,7 @@ public class gameManager : MonoBehaviour
 
         if (!playerTurn && !enemyTurn)
         {
+            /*
             if(playerGBed && playerDone && enemyDone || enemyGBed && playerDone && enemyDone)
             {
                 enemyGBed = false;
@@ -130,14 +131,22 @@ public class gameManager : MonoBehaviour
                 enemyIsGBed.text = " ";
                 Player.choiceText.text = " ";
             }
-
+            */
             if(Enemy.enemyChoice == -1)
             {
                 Debug.Log("AI LOSES TURN BECAUSE GBED!!");
                 enemyDone = true;
             }
 
+            if (Player.playerChoice == -1)
+            {
+                Debug.Log("PLAYED LOSES TURN BECAUSE GBED!!");
+                playerDone = true;
+                Player.choiceText.text = "[[<>]]";
+            }
+
             Debug.Log("Animation phase begun!");
+            Debug.Log("Enemy chooses: " + Enemy.enemyChoice);
             enemyIsGBed.text = " ";
             
             //////PLAYER DODGES////////////
@@ -387,7 +396,8 @@ public class gameManager : MonoBehaviour
                     enemyHit.PlayDelayed(0.80f);
                     enemyHealth -= 30;
                 }
-            } else if(Player.playerChoice == 4 && Enemy.enemyChoice == 4 && !playerDone)
+            }
+            else if(Player.playerChoice == 4 && Enemy.enemyChoice == 4 && !playerDone)
             {
                 Debug.Log("...And both heavies bounce off!");
                 playerHeavy.Play();
@@ -399,7 +409,8 @@ public class gameManager : MonoBehaviour
                 StartCoroutine(AttackNoWait(Quaternion.Euler(0, 0, -45.0f), enemyRightAttackMover, 0.5f));
                 playerDone = true;
                 enemyDone = true;
-            } else if(Player.playerChoice == 4 && Enemy.enemyChoice == 1 && !playerDone)
+            }
+            else if(Player.playerChoice == 4 && Enemy.enemyChoice == 1 && !playerDone)
             {
                 Debug.Log("...And gets guard broken!");
                 playerHeavy.Play();
@@ -420,15 +431,18 @@ public class gameManager : MonoBehaviour
                 switch (Enemy.enemyChoice)
                 {
                     case 0:
+                        Debug.Log("Enemy dodges!");
                         StartCoroutine(DodgeGBNormal(new Vector3(0, 4.5f, 0), enemyGBAndDodgeMover, 1f));
                         enemyDone = true;
                         break;
                     case 1:
+                        Debug.Log("Enemy guardbreaks!");
                         StartCoroutine(DodgeGBNormal(new Vector3(0, -1f, 0), enemyGBAndDodgeMover, 1f));
                         playerGBed = true;
                         enemyDone = true;
                         break;
                     case 2:
+                        Debug.Log("Enemy attacks left!");
                         enemySwing.Play();
                         StartCoroutine(AttackNormal(Quaternion.Euler(0, 0, 90.0f), enemyLeftAttackMover, 1f));
                         playerHit.PlayDelayed(0.80f);
@@ -436,6 +450,7 @@ public class gameManager : MonoBehaviour
                         enemyDone = true;
                         break;
                     case 3:
+                        Debug.Log("Enemy attacks right!");
                         enemySwing.Play();
                         StartCoroutine(AttackNormal(Quaternion.Euler(0, 0, -90.0f), enemyRightAttackMover, 1f));
                         playerHit.PlayDelayed(0.80f);
@@ -443,6 +458,7 @@ public class gameManager : MonoBehaviour
                         enemyDone = true;
                         break;
                     case 4:
+                        Debug.Log("Enemy heavy attacks!");
                         enemyHeavy.Play();
                         StartCoroutine(AttackNormal(Quaternion.Euler(0, 0, 90.0f), enemyLeftAttackMover, 1f));
                         StartCoroutine(AttackNormal(Quaternion.Euler(0, 0, -90.0f), enemyRightAttackMover, 1f));
@@ -487,11 +503,14 @@ public class gameManager : MonoBehaviour
 
                 if (playerGBed)
                 {
+                    Debug.Log("THE PLAYER IS GUARDBROKEN!!!! " + playerGBed);
                     playerTurn = false;
                     Player.choiceText.text = "[[<>]]";
                     enemyTurn = true;
+                    Player.playerChoice = -1;
                 } else if(!playerGBed)
                 {
+                    Debug.Log("PLAYER NOT GUARDBROKEN!!!! " + enemyGBed);
                     playerStamina += 30;
                     Player.choiceText.text = "...";
                     playerTurn = true;
