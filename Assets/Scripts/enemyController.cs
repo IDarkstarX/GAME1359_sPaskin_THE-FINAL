@@ -74,7 +74,7 @@ public class enemyController : MonoBehaviour
                 gameManager.instance.enemyGBed = false;
                 gameManager.instance.playerGBed = false;
                 gameManager.instance.enemyTurn = false;
-
+                gameManager.instance.enemyDone = false;
                 gameManager.instance.enemyStamina -= staminaCost;
             }
         }

@@ -109,17 +109,16 @@ public class gameManager : MonoBehaviour
 
     void Update()
     {
-        //Debug.Log("Is player turn: "+ playerTurn);
-        if (playerHealth <= 0 || enemyHealth <= 0)
-        {
-            return;
-        }
-
         playerHealthImage.fillAmount = playerHealth / 100f;
         playerStaminaImage.fillAmount = playerStamina / 100f;
 
         enemyHealthImage.fillAmount = enemyHealth / 100f;
         enemyStaminaImage.fillAmount = enemyStamina / 100f;
+
+        if (playerHealth <= 0 || enemyHealth <= 0)
+        {
+            return;
+        }
 
         if (!playerTurn && !enemyTurn)
         {
@@ -169,7 +168,8 @@ public class gameManager : MonoBehaviour
                         StartCoroutine(DodgeGBNormal(new Vector3(0, -2.5f, 0), playerGBAndDodgeMover, 0.5f));
                         StartCoroutine(DodgeGBNormal(new Vector3(0, -2f, 0), enemyGBAndDodgeMover, 0.5f));
                         playerGBed = true;
-                    
+                        Player.choiceText.text = "[[<>]]";
+
                         break;
                     case 2:
                         Debug.Log("...And evades the enemy's left attack!");
@@ -418,6 +418,7 @@ public class gameManager : MonoBehaviour
                 StartCoroutine(AttackNoWait(Quaternion.Euler(0, 0, -45.0f), playerLeftAttackMover, 0.5f));
                 StartCoroutine(AttackNoWait(Quaternion.Euler(0, 0, 45.0f), playerRightAttackMover, 0.5f));
                 playerGBed = true;
+                Player.choiceText.text = "[[<>]]";
                 playerDone = true;
                 enemyDone = true;
             }
@@ -425,7 +426,7 @@ public class gameManager : MonoBehaviour
             ///////////////////////////////
 
             //////LEFTOVER ACTIONS ////////
-
+            Debug.Log("Has enemy animated? "+ enemyDone);
             if (!enemyDone)
             {
                 switch (Enemy.enemyChoice)
@@ -439,6 +440,7 @@ public class gameManager : MonoBehaviour
                         Debug.Log("Enemy guardbreaks!");
                         StartCoroutine(DodgeGBNormal(new Vector3(0, -1f, 0), enemyGBAndDodgeMover, 1f));
                         playerGBed = true;
+                        Player.choiceText.text = "[[<>]]";
                         enemyDone = true;
                         break;
                     case 2:
@@ -475,6 +477,7 @@ public class gameManager : MonoBehaviour
                 if (playerHealth <= 0)
                 {
                     Debug.Log("GAME OVER!");
+                    playerHealth = 0;
                     Player.choiceText.text = "YOU LOST!";
                     enemyIsGBed.text = "YOU LOST!";
                     StartCoroutine(GameOver(new Vector3(0, 0, 2), playerGBAndDodgeMover, 1.5f));
@@ -483,6 +486,7 @@ public class gameManager : MonoBehaviour
                 else if (enemyHealth <= 0)
                 {
                     Debug.Log("GAME OVER!");
+                    enemyHealth = 0;
                     Player.choiceText.text = "YOU WIN!";
                     enemyIsGBed.text = "YOU WIN!";
                     StartCoroutine(GameOver(new Vector3(0, 0, 2), enemyGBAndDodgeMover, 1.5f));
@@ -681,10 +685,11 @@ public class gameManager : MonoBehaviour
         //Debug.Log("Starting movement...");
         float time = 0;
         Vector3 startPosition = toMove.transform.position;
+        yield return new WaitForSeconds(1f);
 
         while (time < duration)
         {
-            yield return new WaitForSeconds(1f);
+            
             //Debug.Log("...moving...");
             toMove.transform.position = Vector3.Lerp(startPosition, targetPosition, time / duration);
             time += Time.deltaTime;

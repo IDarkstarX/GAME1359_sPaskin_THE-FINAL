@@ -37,7 +37,7 @@ public class playerController : MonoBehaviour
 
         if (gameManager.instance.playerTurn && !gameManager.instance.playerGBed)
         {
-            Debug.Log("PLAY TURN HAS BEEN ENABLED!!");
+            
 
             targetTime -= Time.deltaTime;
             timerImage.fillAmount = targetTime/ 10.0f;
@@ -82,10 +82,12 @@ public class playerController : MonoBehaviour
 
             if (targetTime <= 0.0f)
             {
+                Debug.Log("PLAYER TURN HAS FINISHED!!");
                 gameManager.instance.playerTurn = false;
                 if (!gameManager.instance.enemyGBed)
                 {
                     gameManager.instance.enemyTurn = true;
+                    //gameManager.instance.enemyDone = false;
                 }
                 else
                 {
