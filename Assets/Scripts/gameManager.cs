@@ -9,6 +9,23 @@ public class gameManager : MonoBehaviour
     public static gameManager instance;
 
     [SerializeField]
+    AudioSource playerSwing;
+    [SerializeField]
+    AudioSource playerHit;
+    [SerializeField]
+    AudioSource playerHeavy;
+
+    [SerializeField]
+    AudioSource enemySwing;
+    [SerializeField]
+    AudioSource enemyHit;
+    [SerializeField]
+    AudioSource enemyHeavy;
+
+    [SerializeField]
+    AudioSource blocked;
+
+    [SerializeField]
     public bool playerTurn = true;
     [SerializeField]
     public bool playerGBed = false;
@@ -92,6 +109,7 @@ public class gameManager : MonoBehaviour
 
     void Update()
     {
+        Debug.Log("Enemy attack chosen: "+Enemy.enemyChoice);
         if (playerHealth <= 0 || enemyHealth <= 0)
         {
             return;
@@ -115,13 +133,14 @@ public class gameManager : MonoBehaviour
 
             if(Enemy.enemyChoice == -1)
             {
+                Debug.Log("AI LOSES TURN BECAUSE GBED!!");
                 enemyDone = true;
             }
 
             Debug.Log("Animation phase begun!");
-            enemyIsGBed.text = "";
+            enemyIsGBed.text = " ";
             
-            //////PLAYER DODGES////////////*
+            //////PLAYER DODGES////////////
 
             if (Player.playerChoice == 0 && !playerDone)
             {
@@ -145,16 +164,19 @@ public class gameManager : MonoBehaviour
                         break;
                     case 2:
                         Debug.Log("...And evades the enemy's left attack!");
+                        enemySwing.Play();
                         StartCoroutine(DodgeGBNormal(new Vector3(0, -4.5f, 0), playerGBAndDodgeMover, 1f));
                         StartCoroutine(AttackNormal(Quaternion.Euler(0, 0, 90.0f), enemyLeftAttackMover, 1f));
                         break;
                     case 3:
                         Debug.Log("...And evades the enemy's right attack!");
+                        enemySwing.Play();
                         StartCoroutine(DodgeGBNormal(new Vector3(0, -4.5f, 0), playerGBAndDodgeMover, 1f));
                         StartCoroutine(AttackNormal(Quaternion.Euler(0, 0, -90.0f), enemyRightAttackMover, 1f));
                         break;
                     case 4:
                         Debug.Log("...And evades the enemy's heavy attack!");
+                        enemyHeavy.Play();
                         StartCoroutine(DodgeGBNormal(new Vector3(0, -4.5f, 0), playerGBAndDodgeMover, 1f));
                         StartCoroutine(AttackNormal(Quaternion.Euler(0, 0, 90.0f), enemyLeftAttackMover, 1f));
                         StartCoroutine(AttackNormal(Quaternion.Euler(0, 0, -90.0f), enemyRightAttackMover, 1f));
@@ -186,6 +208,7 @@ public class gameManager : MonoBehaviour
                         break;
                     case 2:
                         Debug.Log("...And loses to the enemy's left!");
+                        enemySwing.Play();
                         StartCoroutine(DodgeGBNoWait(new Vector3(0, 0.5f, 0), playerGBAndDodgeMover, 0.5f));
                         StartCoroutine(AttackNormal(Quaternion.Euler(0, 0, 90.0f), enemyLeftAttackMover, 1f));
 
@@ -194,6 +217,7 @@ public class gameManager : MonoBehaviour
                         break;
                     case 3:
                         Debug.Log("...And loses to the enemy's right!");
+                        enemySwing.Play();
                         StartCoroutine(DodgeGBNoWait(new Vector3(0, 0.5f, 0), playerGBAndDodgeMover, 0.5f));
                         StartCoroutine(AttackNormal(Quaternion.Euler(0, 0, -90.0f), enemyRightAttackMover, 1f));
 
@@ -202,6 +226,7 @@ public class gameManager : MonoBehaviour
                         break;
                     case 4:
                         Debug.Log("...And grabs the enemy!");
+                        enemyHeavy.Play();
                         StartCoroutine(DodgeGBNormal(new Vector3(0, 1f, 0), playerGBAndDodgeMover, 1f));
                         StartCoroutine(AttackNoWait(Quaternion.Euler(0, 0, 45.0f), enemyLeftAttackMover, 0.5f));
                         StartCoroutine(AttackNoWait(Quaternion.Euler(0, 0, -45.0f), enemyRightAttackMover, 0.5f));
@@ -218,6 +243,7 @@ public class gameManager : MonoBehaviour
             if (Player.playerChoice == 2 && Enemy.enemyChoice != 2 && Enemy.enemyChoice != 4 && !playerDone) //Player left flies
             {
                 Debug.Log("Player left flies...");
+                playerSwing.Play();
                 StartCoroutine(AttackNormal(Quaternion.Euler(0, 0, -90.0f), playerLeftAttackMover, 1));
                 playerDone = true;
                 if(Enemy.enemyChoice == 0)
@@ -228,18 +254,23 @@ public class gameManager : MonoBehaviour
                 } else if(Enemy.enemyChoice == 1)
                 {
                     Debug.Log("...and beats a guard break!");
+                    enemyHit.PlayDelayed(0.80f);
                     StartCoroutine(DodgeGBNoWait(new Vector3(0, -0.5f, 0), enemyGBAndDodgeMover, 0.5f));
                     enemyDone = true;
                     enemyHealth -= 10;
                 } else
                 {
                     Debug.Log("...and lands!");
+                    enemyHit.PlayDelayed(0.80f);
                     enemyHealth -= 10;
                 }
             }
             else if (Player.playerChoice == 2 && Enemy.enemyChoice == 2 && !playerDone) //Player left is blocked by enemy left
             {
                 Debug.Log("Player left is blocked by enemy left!");
+                playerSwing.Play();
+                enemySwing.Play();
+                blocked.PlayDelayed(0.3f);
                 StartCoroutine(AttackNormal(Quaternion.Euler(0, 0, -45.0f), playerLeftAttackMover, 0.5f));
                 StartCoroutine(AttackNormal(Quaternion.Euler(0, 0, 45.0f), enemyLeftAttackMover, 0.5f));
                 playerDone = true;
@@ -248,11 +279,12 @@ public class gameManager : MonoBehaviour
             else if (Player.playerChoice == 2 && Enemy.enemyChoice == 4 && !playerDone) //player left loses to enemy heavy
             {
                 Debug.Log("Player left loses to enemy heavy!");
+                playerSwing.Play();
                 StartCoroutine(AttackNoWait(Quaternion.Euler(0, 0, -40.0f), playerLeftAttackMover, 0.5f));
-
+                enemyHeavy.Play();
                 StartCoroutine(AttackNormal(Quaternion.Euler(0, 0, 90.0f), enemyLeftAttackMover, 1f));
                 StartCoroutine(AttackNormal(Quaternion.Euler(0, 0, -90.0f), enemyRightAttackMover, 1f));
-
+                playerHit.PlayDelayed(0.80f);
                 playerHealth -= 30;
 
                 playerDone = true;
@@ -265,6 +297,7 @@ public class gameManager : MonoBehaviour
             if (Player.playerChoice == 3 && Enemy.enemyChoice != 3 && Enemy.enemyChoice != 4 && !playerDone) //Player right flies
             {
                 Debug.Log("Player right flies...");
+                playerSwing.Play();
                 StartCoroutine(AttackNormal(Quaternion.Euler(0, 0, 90.0f), playerRightAttackMover, 1));
                 playerDone = true;
                 if (Enemy.enemyChoice == 0)
@@ -276,6 +309,7 @@ public class gameManager : MonoBehaviour
                 else if (Enemy.enemyChoice == 1)
                 {
                     Debug.Log("...and beats a guard break!");
+                    enemyHit.PlayDelayed(0.80f);
                     StartCoroutine(DodgeGBNoWait(new Vector3(0, -0.5f, 0), enemyGBAndDodgeMover, 0.5f));
                     enemyDone = true;
                     enemyHealth -= 10;
@@ -283,12 +317,16 @@ public class gameManager : MonoBehaviour
                 else
                 {
                     Debug.Log("...and lands!");
+                    enemyHit.PlayDelayed(0.80f);
                     enemyHealth -= 10;
                 }
             }
             else if (Player.playerChoice == 3 && Enemy.enemyChoice == 3 && !playerDone) //Player right is blocked by enemy right
             {
                 Debug.Log("Player right is blocked by enemy right!");
+                playerSwing.Play();
+                enemySwing.Play();
+                blocked.PlayDelayed(0.3f);
                 StartCoroutine(AttackNormal(Quaternion.Euler(0, 0, 45.0f), playerRightAttackMover, 0.5f));
                 StartCoroutine(AttackNormal(Quaternion.Euler(0, 0, -45.0f), enemyRightAttackMover, 0.5f));
                 playerDone = true;
@@ -297,11 +335,12 @@ public class gameManager : MonoBehaviour
             else if (Player.playerChoice == 3 && Enemy.enemyChoice == 4 && !playerDone) //player right loses to enemy heavy
             {
                 Debug.Log("Player right loses to enemy heavy!");
+                playerSwing.Play();
                 StartCoroutine(AttackNoWait(Quaternion.Euler(0, 0, 40.0f), playerRightAttackMover, 0.5f));
-
+                enemyHeavy.Play();
                 StartCoroutine(AttackNormal(Quaternion.Euler(0, 0, 90.0f), enemyLeftAttackMover, 1f));
                 StartCoroutine(AttackNormal(Quaternion.Euler(0, 0, -90.0f), enemyRightAttackMover, 1f));
-
+                playerHit.PlayDelayed(0.80f);
                 playerHealth -= 30;
 
                 playerDone = true;
@@ -315,6 +354,7 @@ public class gameManager : MonoBehaviour
             if(Player.playerChoice == 4 && Enemy.enemyChoice != 1 && Enemy.enemyChoice != 4 && !playerDone)
             {
                 Debug.Log("Player throws a heavy...");
+                playerHeavy.Play();
                 StartCoroutine(AttackNormal(Quaternion.Euler(0, 0, -90.0f), playerLeftAttackMover, 1f));
                 StartCoroutine(AttackNormal(Quaternion.Euler(0, 0, 90.0f), playerRightAttackMover, 1f));
                 playerDone = true;
@@ -326,25 +366,33 @@ public class gameManager : MonoBehaviour
                 } else if(Enemy.enemyChoice == 2)
                 {
                     Debug.Log("...and beats a left attack!");
+                    enemySwing.Play();
                     StartCoroutine(AttackNoWait(Quaternion.Euler(0, 0, 40.0f), enemyLeftAttackMover, 0.5f));
+                    enemyHit.PlayDelayed(0.80f);
                     enemyHealth -= 30;
                     enemyDone = true;
                 }
                 else if (Enemy.enemyChoice == 3)
                 {
                     Debug.Log("...and beats a right attack!");
+                    enemySwing.Play();
                     StartCoroutine(AttackNoWait(Quaternion.Euler(0, 0, -40.0f), enemyRightAttackMover, 0.5f));
+                    enemyHit.PlayDelayed(0.80f);
                     enemyHealth -= 30;
                     enemyDone = true;
                 }
                 else
                 {
                     Debug.Log("...and lands!");
+                    enemyHit.PlayDelayed(0.80f);
                     enemyHealth -= 30;
                 }
             } else if(Player.playerChoice == 4 && Enemy.enemyChoice == 4 && !playerDone)
             {
                 Debug.Log("...And both heavies bounce off!");
+                playerHeavy.Play();
+                enemyHeavy.Play();
+                blocked.PlayDelayed(0.3f);
                 StartCoroutine(AttackNoWait(Quaternion.Euler(0, 0, -45.0f), playerLeftAttackMover, 0.5f));
                 StartCoroutine(AttackNoWait(Quaternion.Euler(0, 0, 45.0f), playerRightAttackMover, 0.5f));
                 StartCoroutine(AttackNoWait(Quaternion.Euler(0, 0, 45.0f), enemyLeftAttackMover, 0.5f));
@@ -354,6 +402,7 @@ public class gameManager : MonoBehaviour
             } else if(Player.playerChoice == 4 && Enemy.enemyChoice == 1 && !playerDone)
             {
                 Debug.Log("...And gets guard broken!");
+                playerHeavy.Play();
                 StartCoroutine(DodgeGBNormal(new Vector3(0, -1f, 0), enemyGBAndDodgeMover, 1f));
                 StartCoroutine(AttackNoWait(Quaternion.Euler(0, 0, -45.0f), playerLeftAttackMover, 0.5f));
                 StartCoroutine(AttackNoWait(Quaternion.Euler(0, 0, 45.0f), playerRightAttackMover, 0.5f));
@@ -380,18 +429,24 @@ public class gameManager : MonoBehaviour
                         enemyDone = true;
                         break;
                     case 2:
+                        enemySwing.Play();
                         StartCoroutine(AttackNormal(Quaternion.Euler(0, 0, 90.0f), enemyLeftAttackMover, 1f));
+                        playerHit.PlayDelayed(0.80f);
                         playerHealth -= 10;
                         enemyDone = true;
                         break;
                     case 3:
+                        enemySwing.Play();
                         StartCoroutine(AttackNormal(Quaternion.Euler(0, 0, -90.0f), enemyRightAttackMover, 1f));
+                        playerHit.PlayDelayed(0.80f);
                         playerHealth -= 10;
                         enemyDone = true;
                         break;
                     case 4:
+                        enemyHeavy.Play();
                         StartCoroutine(AttackNormal(Quaternion.Euler(0, 0, 90.0f), enemyLeftAttackMover, 1f));
                         StartCoroutine(AttackNormal(Quaternion.Euler(0, 0, -90.0f), enemyRightAttackMover, 1f));
+                        playerHit.PlayDelayed(0.80f);
                         playerHealth -= 30;
                         enemyDone = true;
                         break;
@@ -442,8 +497,9 @@ public class gameManager : MonoBehaviour
                     playerTurn = true;
                 }
 
-                if (enemyIsGBed)
+                if (enemyGBed)
                 {
+                    Debug.Log("THE AI IS GUARDBROKEN!!!! " + enemyGBed);
                     enemyIsGBed.text = "[[<>]]";
                     Enemy.enemyChoice = -1;
                 }
@@ -456,16 +512,24 @@ public class gameManager : MonoBehaviour
                 if(playerStamina > 100)
                 {
                     playerStamina = 100;
+                } else if (playerStamina < 0)
+                {
+                    playerStamina = 0;
                 }
 
                 if (enemyStamina > 100)
                 {
                     enemyStamina = 100;
                 }
+                else if (enemyStamina < 0)
+                {
+                    enemyStamina = 0;
+                }
 
                 if (enemyHealth <= 30)
                 {
                     Enemy.choiceMod=-1;
+                    enemyStamina += 60;
                 }
                 if (playerHealth <= 50)
                 {
@@ -601,6 +665,7 @@ public class gameManager : MonoBehaviour
 
         while (time < duration)
         {
+            yield return new WaitForSeconds(1f);
             //Debug.Log("...moving...");
             toMove.transform.position = Vector3.Lerp(startPosition, targetPosition, time / duration);
             time += Time.deltaTime;

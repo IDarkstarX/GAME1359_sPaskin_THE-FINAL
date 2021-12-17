@@ -34,12 +34,12 @@ public class enemyController : MonoBehaviour
         {
             rInt = Random.Range(0, 5) + choiceMod;
 
-            if(rInt <= 0) // dodge
+            if (rInt <= 0) // dodge
             {
                 enemyChoice = 0;
                 staminaCost = 15;
             }
-            else if(rInt == 1) // GB
+            else if (rInt == 1) // GB
             {
                 enemyChoice = 1;
                 staminaCost = 0;
@@ -60,7 +60,7 @@ public class enemyController : MonoBehaviour
                 staminaCost = 60;
             }
 
-            if(gameManager.instance.enemyStamina >= 50 && gameManager.instance.playerGBed)
+            if (gameManager.instance.enemyStamina >= 50 && gameManager.instance.playerGBed)
             {
                 enemyChoice = 4;
                 staminaCost = 60;
@@ -77,6 +77,17 @@ public class enemyController : MonoBehaviour
 
                 gameManager.instance.enemyStamina -= staminaCost;
             }
+        }
+
+        ////
+        else if (gameManager.instance.enemyTurn && gameManager.instance.enemyGBed)
+        {
+            Debug.Log("THE AI IS GUARDBROKEN (Enemy script)!!!! " + gameManager.instance.enemyGBed);
+            gameManager.instance.enemyGBed = false;
+            gameManager.instance.enemyIsGBed.text = " ";
+            enemyChoice = -1;
+            gameManager.instance.enemyTurn = false;
+            gameManager.instance.playerTurn = true;
         }
     }
 }

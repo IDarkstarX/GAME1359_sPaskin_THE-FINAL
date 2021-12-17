@@ -90,9 +90,10 @@ public class playerController : MonoBehaviour
                 else
                 {
                     gameManager.instance.enemyGBed = false;
+                    //gameManager.instance.enemyDone = true;
                 }
                 gameManager.instance.playerDone = false;
-                gameManager.instance.enemyDone = false;
+                
 
                 gameManager.instance.playerStamina -= staminaCost;
 
